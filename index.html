@@ -1,0 +1,929 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Directory Learning Path</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: #09090f;
+            color: #e4e4e7;
+        }
+
+        .module-content {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .3s ease;
+        }
+
+        .module-content.open {
+            grid-template-rows: 1fr;
+        }
+
+        .module-inner {
+            overflow: hidden;
+        }
+
+        .module-arrow {
+            transition: transform .3s ease;
+        }
+
+        .module-arrow.rotate {
+            transform: rotate(180deg);
+        }
+
+        .topic-card {
+            background: #11111b;
+            border: 1px solid #272735;
+            transition: border-color .2s ease;
+        }
+
+        .topic-card:hover {
+            border-color: #52527a;
+        }
+
+        input[type="radio"] {
+            accent-color: #818cf8;
+            cursor: pointer;
+        }
+
+        .status-label {
+            cursor: pointer;
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+        .status-label:has(input:checked) {
+            color: #c4b5fd;
+        }
+
+        .progress-bar {
+            transition: width .3s ease;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f50;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<div class="max-w-6xl mx-auto px-4 py-8 md:py-12">
+
+    <!-- Header -->
+    <header class="mb-10">
+
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-2xl">
+                🛡️
+            </div>
+
+            <div>
+                <p class="text-xs uppercase tracking-[3px] text-indigo-400 font-semibold">
+                    Security Learning Platform
+                </p>
+                <h1 class="text-xl font-bold text-white">
+                    AD Learning Path
+                </h1>
+            </div>
+        </div>
+
+        <h2 class="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
+            Active Directory <br>
+            <span class="text-indigo-400">From Zero to Advanced</span>
+        </h2>
+
+        <p class="text-zinc-400 max-w-2xl leading-relaxed">
+            A structured learning roadmap covering Windows architecture,
+            Active Directory fundamentals, enumeration, authentication,
+            security assessment and enterprise infrastructure.
+        </p>
+
+        <div class="flex flex-wrap gap-2 mt-6">
+            <span class="px-3 py-1.5 rounded-full text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                14 Modules
+            </span>
+            <span class="px-3 py-1.5 rounded-full text-xs bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                Beginner → Advanced
+            </span>
+            <span class="px-3 py-1.5 rounded-full text-xs bg-zinc-800 text-zinc-300 border border-zinc-700">
+                Local Progress Saving
+            </span>
+        </div>
+
+    </header>
+
+
+    <!-- Progress Dashboard -->
+    <section class="bg-[#11111b] border border-[#272735] rounded-2xl p-5 md:p-7 mb-8">
+
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <p class="text-sm text-zinc-400">Your Learning Progress</p>
+                <h3 class="text-3xl font-bold text-white mt-1" id="overallPercent">
+                    0%
+                </h3>
+            </div>
+
+            <div class="w-14 h-14 rounded-full bg-indigo-500/10 flex items-center justify-center text-2xl">
+                📊
+            </div>
+        </div>
+
+        <div class="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden mb-5">
+            <div id="overallProgress"
+                class="progress-bar h-full bg-indigo-500 rounded-full"
+                style="width: 0%">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+            <div class="bg-[#191925] rounded-xl p-4">
+                <p class="text-xs text-zinc-500 mb-1">Total Topics</p>
+                <h4 id="totalTopics" class="text-2xl font-bold text-white">0</h4>
+            </div>
+
+            <div class="bg-[#191925] rounded-xl p-4">
+                <p class="text-xs text-zinc-500 mb-1">Completed</p>
+                <h4 id="completedTopics" class="text-2xl font-bold text-emerald-400">0</h4>
+            </div>
+
+            <div class="bg-[#191925] rounded-xl p-4">
+                <p class="text-xs text-zinc-500 mb-1">Learning</p>
+                <h4 id="learningTopics" class="text-2xl font-bold text-amber-400">0</h4>
+            </div>
+
+            <div class="bg-[#191925] rounded-xl p-4">
+                <p class="text-xs text-zinc-500 mb-1">Not Started</p>
+                <h4 id="pendingTopics" class="text-2xl font-bold text-zinc-400">0</h4>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Search and Filters -->
+    <section class="mb-6">
+
+        <div class="flex flex-col md:flex-row gap-3">
+
+            <div class="relative flex-1">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search modules or topics..."
+                    class="w-full bg-[#11111b] border border-[#30303d] rounded-xl px-4 py-3 pl-11 text-sm text-white outline-none focus:border-indigo-500"
+                >
+                <span class="absolute left-4 top-3.5 text-zinc-500">
+                    🔍
+                </span>
+            </div>
+
+            <select
+                id="levelFilter"
+                class="bg-[#11111b] border border-[#30303d] rounded-xl px-4 py-3 text-sm text-zinc-300 outline-none focus:border-indigo-500"
+            >
+                <option value="all">All Levels</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+
+            <select
+                id="statusFilter"
+                class="bg-[#11111b] border border-[#30303d] rounded-xl px-4 py-3 text-sm text-zinc-300 outline-none focus:border-indigo-500"
+            >
+                <option value="all">All Topics</option>
+                <option value="pending">Not Started</option>
+                <option value="learning">Learning</option>
+                <option value="completed">Completed</option>
+            </select>
+
+        </div>
+    </section>
+
+
+    <!-- Modules -->
+    <section>
+
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-lg font-bold text-white">
+                Learning Modules
+            </h3>
+
+            <span class="text-xs text-zinc-500" id="moduleCount">
+                14 Modules
+            </span>
+        </div>
+
+        <div id="modulesContainer" class="space-y-4"></div>
+
+        <div id="emptyState" class="hidden text-center py-16 text-zinc-500">
+            No matching topics found.
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-[#272735] pt-6 text-center">
+        <p class="text-sm text-zinc-500">
+            Active Directory Learning Path
+        </p>
+        <p class="text-xs text-zinc-600 mt-2">
+            Progress is saved locally in your browser.
+        </p>
+    </footer>
+
+</div>
+
+
+<script>
+
+// ==========================================
+// 1. MODULE DATA
+// ==========================================
+
+const modules = [
+
+{
+    id: "01",
+    name: "Windows Architecture & Fundamentals",
+    level: "Beginner",
+    duration: "Week 1",
+    topics: [
+        ["Windows Architecture", "Kernel, User Mode, Kernel Mode, System Calls, Windows Services, Processes and Threads."],
+        ["Windows File System", "NTFS, File Permissions, Registry, System32, SAM Database and Windows Directory Structure."],
+        ["Windows Authentication", "Local Accounts, User Profiles, Security Context, Logon Process and Credential Management."],
+        ["Windows Security Components", "LSASS, SAM, LSA, Windows Defender, UAC and Windows Firewall."],
+        ["Windows Networking", "TCP/IP, DNS, SMB, RDP, RPC, NetBIOS and Windows Network Services."],
+        ["PowerShell Fundamentals", "Cmdlets, Objects, Pipeline, Variables, Scripts and PowerShell basics."]
+    ],
+    practice: "Create a Windows 10/11 VM. Explore local users, groups, services, processes, registry and network configurations."
+},
+
+{
+    id: "02",
+    name: "Active Directory Architecture & Fundamentals",
+    level: "Beginner",
+    duration: "Week 1–2",
+    topics: [
+        ["Introduction to Active Directory", "What is Active Directory, why it is used, centralized identity and resource management."],
+        ["Domain Controller", "DC responsibilities, authentication, directory database and replication."],
+        ["Domain, Tree & Forest", "Domain, Child Domain, Tree, Forest and their hierarchical relationships."],
+        ["Organizational Unit (OU)", "OU structure, object organization, delegation and Group Policy relationship."],
+        ["Active Directory Objects", "Users, Groups, Computers, Contacts and Service Accounts."],
+        ["AD Database", "NTDS.dit, SYSVOL, directory structure and directory data."],
+        ["FSMO Roles", "Schema Master, Domain Naming Master, RID Master, PDC Emulator and Infrastructure Master."],
+        ["AD Replication", "Replication, Sites, Subnets, Site Links and Replication Topology."],
+        ["Group Policy (GPO)", "GPO, Group Policy Processing, Computer Configuration and User Configuration."],
+        ["Active Directory DNS", "AD-integrated DNS, SRV Records and Domain Controller Discovery."]
+    ],
+    practice: "Create an isolated Windows Server domain. Join a Windows client and create users, groups and OUs."
+},
+
+{
+    id: "03",
+    name: "Active Directory Administration & Permissions",
+    level: "Beginner",
+    duration: "Week 2",
+    topics: [
+        ["User & Group Management", "Domain users, security groups, distribution groups and group nesting."],
+        ["Group Scope", "Domain Local, Global and Universal groups."],
+        ["Privileged Groups", "Domain Admins, Enterprise Admins, Administrators and other privileged groups."],
+        ["Security Identifiers (SID)", "SID structure, RID, well-known SIDs and identity mapping."],
+        ["Windows Access Control", "Authentication vs Authorization, Security Tokens and Access Checks."],
+        ["ACL & DACL Basics", "Access Control List, Discretionary ACL, ACE and permission inheritance."],
+        ["GPO Security", "Password Policies, Account Lockout Policies and Security Policies."]
+    ],
+    practice: "Create users, security groups, OUs and GPOs in your lab. Test permission assignment and inheritance."
+},
+
+{
+    id: "04",
+    name: "Active Directory Protocols & Authentication",
+    level: "Intermediate",
+    duration: "Week 3",
+    topics: [
+        ["LDAP Fundamentals", "LDAP Architecture, Directory Information Tree, Distinguished Name and Relative Distinguished Name."],
+        ["LDAP Operations", "Bind, Search, Compare, Add, Modify, Delete and LDAP Filters."],
+        ["LDAP Security", "LDAP over TLS, LDAPS, Signing, Channel Binding and Secure Configuration."],
+        ["Kerberos Authentication", "KDC, Authentication Server, Ticket Granting Server, TGT and Service Tickets."],
+        ["Kerberos Components", "SPN, Realm, Principal, Session Key and Ticket Lifetime."],
+        ["NTLM Authentication", "NTLM Challenge-Response, NTLMv1 vs NTLMv2 and Authentication Flow."],
+        ["SMB Protocol", "SMB Shares, Sessions, Authentication and Security Settings."],
+        ["RPC & WinRM", "Remote Procedure Call, Windows Remote Management and Enterprise Administration."],
+        ["DNS in Authentication", "DNS Resolution and Domain Controller Locator Process."]
+    ],
+    practice: "Observe LDAP queries, DNS records, Kerberos authentication events and SMB configurations in your lab."
+},
+
+{
+    id: "05",
+    name: "Active Directory Enumeration",
+    level: "Intermediate",
+    duration: "Week 4",
+    topics: [
+        ["Enumeration Fundamentals", "Enumeration vs Scanning, Passive and Authenticated Information Gathering."],
+        ["Domain Enumeration", "Domain Information, Domain Controllers, Domain SID and Functional Level."],
+        ["User Enumeration", "User Attributes, Account Status, Descriptions and Account Configuration."],
+        ["Group Enumeration", "Group Membership, Nested Groups and Privileged Group Relationships."],
+        ["Computer Enumeration", "Domain-Joined Computers, Operating Systems and Host Roles."],
+        ["OU & GPO Enumeration", "Organizational Structure, Linked GPOs and Policy Configuration."],
+        ["ACL Enumeration", "Object Permissions, Inheritance and Risky Access Relationships."],
+        ["Trust Enumeration", "Domain Trusts, Forest Trusts, Trust Direction and Transitivity."],
+        ["Service Enumeration", "SPNs, Service Accounts and Service Configuration."]
+    ],
+    practice: "Create a complete inventory of your lab domain: users, groups, computers, OUs, GPOs, services and trusts."
+},
+
+{
+    id: "06",
+    name: "PowerView & BloodHound",
+    level: "Intermediate",
+    duration: "Week 5",
+    topics: [
+        ["PowerView Fundamentals", "PowerView, PowerShell-based AD Reconnaissance and Data Model."],
+        ["PowerShell AD Discovery", "Domain, Users, Groups, Computers and OU Discovery."],
+        ["PowerView Object Analysis", "AD Object Properties, Group Membership, SPNs and Permission Relationships."],
+        ["BloodHound Fundamentals", "Architecture, Nodes, Edges, Graph Database and Collected Data."],
+        ["BloodHound Data Collection", "Collection Methods, Data Types, Scope and Authorized Lab Practices."],
+        ["BloodHound Analysis", "Attack Paths, Shortest Paths, Privileged Relationships and Graph Interpretation."],
+        ["Common AD Relationships", "MemberOf, AdminTo, HasSession, GenericAll and Permission Relationships."],
+        ["Defensive Remediation", "Excessive Privileges, Risky Group Membership and Dangerous Relationships."]
+    ],
+    practice: "Collect authorized data from your lab domain and analyze the resulting BloodHound graph."
+},
+
+{
+    id: "07",
+    name: "AD Security Assessment Tools",
+    level: "Intermediate",
+    duration: "Week 6",
+    topics: [
+        ["CrackMapExec / NetExec", "Network Assessment Framework, SMB Enumeration and Authentication Testing Concepts."],
+        ["Nmap for Windows Networks", "Host Discovery, Port Identification, Service Detection and Network Mapping."],
+        ["Impacket Fundamentals", "Python-based Protocol Library and Windows/AD Protocol Implementations."],
+        ["LDAP Tools", "ldapsearch, LDAP Clients, Filters and Directory Query Analysis."],
+        ["PowerShell AD Module", "ActiveDirectory Module, Get-ADUser, Get-ADGroup and Get-ADComputer."],
+        ["Wireshark", "LDAP, Kerberos, NTLM, SMB Traffic and Authentication Packet Analysis."],
+        ["Assessment Documentation", "Evidence Collection, Findings Validation, Impact and Remediation Reports."]
+    ],
+    practice: "Perform an authorized assessment of your lab network and document inventory and configuration findings."
+},
+
+{
+    id: "08",
+    name: "Kerberos Security & Attacks",
+    level: "Advanced",
+    duration: "Week 7",
+    topics: [
+        ["Kerberos Deep Dive", "AS-REQ, AS-REP, TGS-REQ, TGS-REP, AP-REQ and Authentication Flow."],
+        ["Ticket Security", "TGT, TGS, Encryption Types, Ticket Lifetime and Delegation."],
+        ["SPN Security", "Service Principal Names, Service Account Mapping and Configuration Risks."],
+        ["Kerberoasting Concept", "Service Account Password Exposure Risks, Prerequisites and Defensive Monitoring."],
+        ["AS-REP Roasting Concept", "Pre-Authentication Configuration Risks and Account Protection."],
+        ["Pass-the-Ticket Concept", "Kerberos Ticket Exposure Risks and Detection."],
+        ["Delegation Security", "Unconstrained, Constrained and Resource-Based Constrained Delegation."],
+        ["Kerberos Detection", "Windows Event Logs, Suspicious Authentication Patterns and Remediation."]
+    ],
+    practice: "Analyze Kerberos authentication traces and Windows event logs to identify security configuration risks."
+},
+
+{
+    id: "09",
+    name: "DACL & Active Directory Privilege Security",
+    level: "Advanced",
+    duration: "Week 8",
+    topics: [
+        ["ACL Architecture", "ACL, DACL, SACL, ACE and Access Control Structure."],
+        ["ACE Types", "Allow, Deny, Inherited ACE and Object-Specific Permissions."],
+        ["AD Object Permissions", "GenericAll, GenericWrite, WriteDACL, WriteOwner, WriteProperty and Extended Rights."],
+        ["Permission Inheritance", "Parent-Child Object Permissions and Inheritance Protection."],
+        ["DACL Security Assessment", "Excessive Permissions, Dangerous Delegation and Misconfigured Access."],
+        ["AdminSDHolder", "Protected Groups, SDProp and Privileged Object Permissions."],
+        ["DACL Attacks I", "Permission Abuse Threat Models, Impact and Security Implications."],
+        ["DACL Attacks II", "Ownership, ACL Modification and Delegation-Related Security Risks."],
+        ["Remediation", "Least Privilege, Permission Review and Secure ACL Design."]
+    ],
+    practice: "Audit AD object permissions in your lab. Identify excessive permissions and document secure configurations."
+},
+
+{
+    id: "10",
+    name: "NTLM Relay & Windows Lateral Movement",
+    level: "Advanced",
+    duration: "Week 9",
+    topics: [
+        ["NTLM Security Architecture", "Challenge-Response Authentication and Protocol Weaknesses."],
+        ["NTLM Relay Threat Model", "Relay Vulnerability Prerequisites, Security Impact and Affected Services."],
+        ["SMB Security", "SMB Signing, Authentication and Secure Share Configuration."],
+        ["LDAP Security", "LDAP Signing, Channel Binding and Secure LDAP Configuration."],
+        ["Windows Remote Administration", "SMB, WinRM, RDP, WMI and Remote Administration Architecture."],
+        ["Lateral Movement Concepts", "Credential Exposure, Privileged Access, Remote Sessions and Detection."],
+        ["Windows Authentication Artifacts", "Logon Sessions, Access Tokens, Credentials and Security Boundaries."],
+        ["Detection & Prevention", "Windows Event Logs, Endpoint Monitoring, SMB Signing and Least Privilege."]
+    ],
+    practice: "Audit remote administration, authentication logs, SMB signing and remote access permissions in your lab."
+},
+
+{
+    id: "11",
+    name: "Active Directory Certificate Services (ADCS)",
+    level: "Advanced",
+    duration: "Week 10",
+    topics: [
+        ["PKI Fundamentals", "Public Key Infrastructure, Public/Private Keys, Certificates and Trust Chains."],
+        ["Certificate Authority", "Root CA, Enterprise CA, Issuing CA and CA Hierarchy."],
+        ["ADCS Architecture", "Certificate Services, Enrollment Services and Certificate Lifecycle."],
+        ["Certificate Templates", "Template Permissions, EKUs, Subject Name, Enrollment Rights and Issuance Policies."],
+        ["Certificate Enrollment", "Auto-Enrollment, Manual Enrollment and Certificate Management."],
+        ["ADCS Misconfigurations", "Risky Templates, Excessive Enrollment Permissions and CA Weaknesses."],
+        ["ADCS Attack Categories", "ESC Vulnerability Classes and Their Security Implications."],
+        ["Certificate Security", "Certificate Validation, Revocation, CRL, OCSP and Remediation."]
+    ],
+    practice: "Inspect CA configuration, certificate templates and enrollment permissions in an isolated lab."
+},
+
+{
+    id: "12",
+    name: "Active Directory Trusts & Forest Security",
+    level: "Advanced",
+    duration: "Week 11",
+    topics: [
+        ["Trust Fundamentals", "Trust Relationships and Cross-Domain Authentication."],
+        ["Trust Types", "Parent-Child, Tree-Root, External, Forest and Shortcut Trust."],
+        ["Trust Direction", "One-Way, Two-Way, Inbound and Outbound Trust."],
+        ["Transitive vs Non-Transitive", "Trust Transitivity and Authentication Boundaries."],
+        ["SID History", "SID History Attribute and Cross-Domain Security Implications."],
+        ["Forest Security", "Forest Boundaries, Enterprise Administration and Isolation."],
+        ["Trust Attack Concepts", "Trust Misconfiguration and Cross-Domain Privilege Exposure."],
+        ["Trust Auditing", "Trust Configuration Review and Privileged Access Boundaries."]
+    ],
+    practice: "Document domain and forest trust configurations in your lab and review their security implications."
+},
+
+{
+    id: "13",
+    name: "Enterprise Infrastructure Security",
+    level: "Advanced",
+    duration: "Week 12",
+    topics: [
+        ["Microsoft SQL Server Security", "MSSQL Architecture, Windows Authentication, SQL Authentication and Permissions."],
+        ["MSSQL Assessment", "Database Roles, Linked Servers, Network Exposure and Configuration Review."],
+        ["Microsoft Exchange Security", "Exchange Architecture, Mail Flow, Authentication and Privileged Roles."],
+        ["Exchange Assessment", "Exchange Permissions, Service Exposure and Patch Management."],
+        ["SCCM / MECM Fundamentals", "Site Server, Management Points, Distribution Points and Client Communication."],
+        ["SCCM Security", "Administrative Roles, Client Configuration, Deployment Permissions and Hardening."],
+        ["Enterprise Service Accounts", "Service Account Lifecycle, gMSA, Password Management and Least Privilege."]
+    ],
+    practice: "Map enterprise service architecture and review configurations in an authorized training environment."
+},
+
+{
+    id: "14",
+    name: "C2 Operations, Windows Evasion & Detection",
+    level: "Advanced",
+    duration: "Beyond Week 12",
+    topics: [
+        ["C2 Fundamentals", "Command and Control Architecture, Agent, Listener, Beacon and Communication Channels."],
+        ["Sliver Framework", "Sliver Architecture, Authorized Lab Setup and Defensive Research."],
+        ["C2 Detection", "Network Indicators, Process Behavior and Endpoint Telemetry."],
+        ["Windows Security Architecture", "Windows Defender, AMSI, ETW, EDR and Security Monitoring."],
+        ["Windows Evasion Concepts", "Detection Evasion Threat Models and Defensive Implications."],
+        ["Logging & Telemetry", "Sysmon, Windows Event Logs, PowerShell Logging and Centralized Monitoring."],
+        ["Incident Response", "Detection, Triage, Containment, Investigation and Recovery."],
+        ["Final AD Assessment", "Scope Definition, Enumeration, Risk Analysis, Evidence, Reporting and Remediation."]
+    ],
+    practice: "Generate benign security telemetry in an isolated lab and practice detection rules and incident investigation."
+}
+
+];
+
+
+// ==========================================
+// 2. LOCAL STORAGE
+// ==========================================
+
+const STORAGE_KEY = "ad_learning_path_v1";
+
+let progress = {};
+
+function loadProgress() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        progress = saved ? JSON.parse(saved) : {};
+
+        if (!progress || typeof progress !== "object" || Array.isArray(progress)) {
+            progress = {};
+        }
+    } catch (error) {
+        progress = {};
+    }
+}
+
+function saveProgress() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    } catch (error) {
+        alert("Could not save progress. Check browser storage settings.");
+    }
+}
+
+function getStatus(moduleId, topicIndex) {
+    return progress[`${moduleId}-${topicIndex}`] || "pending";
+}
+
+function setStatus(moduleId, topicIndex, status) {
+    const key = `${moduleId}-${topicIndex}`;
+
+    if (status === "pending") {
+        delete progress[key];
+    } else {
+        progress[key] = status;
+    }
+
+    saveProgress();
+    renderModules();
+    updateDashboard();
+}
+
+
+// ==========================================
+// 3. MODULE RENDERING
+// ==========================================
+
+const container = document.getElementById("modulesContainer");
+
+function renderModules() {
+
+    const search = document
+        .getElementById("searchInput")
+        .value.toLowerCase()
+        .trim();
+
+    const level = document.getElementById("levelFilter").value;
+    const statusFilter = document.getElementById("statusFilter").value;
+
+    container.innerHTML = "";
+
+    let visibleCount = 0;
+
+    modules.forEach((module) => {
+
+        if (level !== "all" && module.level !== level) {
+            return;
+        }
+
+        const filteredTopics = module.topics
+            .map((topic, index) => ({
+                topic,
+                index,
+                status: getStatus(module.id, index)
+            }))
+            .filter(item => {
+
+                const matchesSearch =
+                    module.name.toLowerCase().includes(search) ||
+                    item.topic[0].toLowerCase().includes(search) ||
+                    item.topic[1].toLowerCase().includes(search);
+
+                const matchesStatus =
+                    statusFilter === "all" ||
+                    item.status === statusFilter;
+
+                return matchesSearch && matchesStatus;
+            });
+
+        if (filteredTopics.length === 0) {
+            return;
+        }
+
+        visibleCount++;
+
+        const completed = module.topics.filter(
+            (_, index) => getStatus(module.id, index) === "completed"
+        ).length;
+
+        const learning = module.topics.filter(
+            (_, index) => getStatus(module.id, index) === "learning"
+        ).length;
+
+        const total = module.topics.length;
+        const percent = Math.round((completed / total) * 100);
+
+        const levelColors = {
+            Beginner: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+            Intermediate: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+            Advanced: "text-amber-400 bg-amber-500/10 border-amber-500/20"
+        };
+
+        const article = document.createElement("article");
+
+        article.className =
+            "bg-[#11111b] border border-[#272735] rounded-2xl overflow-hidden";
+
+        const header = document.createElement("button");
+
+        header.type = "button";
+        header.className =
+            "w-full text-left p-5 md:p-6 hover:bg-white/[0.02] transition";
+
+        header.innerHTML = `
+            <div class="flex items-start gap-4">
+
+                <div class="w-11 h-11 shrink-0 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold">
+                    ${module.id}
+                </div>
+
+                <div class="flex-1 min-w-0">
+
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+
+                        <span class="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md border ${levelColors[module.level]}">
+                            ${module.level}
+                        </span>
+
+                        <span class="text-xs text-zinc-500">
+                            ${module.duration}
+                        </span>
+
+                    </div>
+
+                    <h3 class="text-base md:text-lg font-semibold text-white">
+                        ${module.name}
+                    </h3>
+
+                    <div class="flex items-center gap-3 mt-3">
+
+                        <div class="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full progress-bar"
+                                style="width:${percent}%">
+                            </div>
+                        </div>
+
+                        <span class="text-xs text-zinc-400 whitespace-nowrap">
+                            ${completed}/${total} completed
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <svg class="module-arrow w-5 h-5 text-zinc-500 shrink-0 mt-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+                    <path d="m6 9 6 6 6-6"/>
+                </svg>
+
+            </div>
+        `;
+
+        const content = document.createElement("div");
+        content.className = "module-content";
+
+        const inner = document.createElement("div");
+        inner.className = "module-inner";
+
+        const body = document.createElement("div");
+        body.className = "px-5 md:px-6 pb-6";
+
+        body.innerHTML = `
+            <div class="border-t border-[#272735] pt-5">
+
+                <div class="flex flex-wrap gap-3 text-xs text-zinc-500 mb-5">
+                    <span>📚 ${total} Total Topics</span>
+                    <span>✓ ${completed} Completed</span>
+                    <span>◷ ${learning} Learning</span>
+                </div>
+
+                <h4 class="text-sm font-semibold text-white mb-4">
+                    Topics to Learn
+                </h4>
+
+                <div class="space-y-3" id="topics-${module.id}"></div>
+
+                <div class="mt-5 p-4 bg-indigo-500/5 border border-indigo-500/15 rounded-xl">
+
+                    <div class="flex items-center gap-2 mb-2">
+                        <span>🧪</span>
+                        <h4 class="text-sm font-semibold text-indigo-300">
+                            Practical Lab
+                        </h4>
+                    </div>
+
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        ${module.practice}
+                    </p>
+
+                </div>
+
+            </div>
+        `;
+
+        const topicContainer = body.querySelector(`#topics-${module.id}`);
+
+        filteredTopics.forEach(({topic, index, status}) => {
+
+            const card = document.createElement("div");
+
+            card.className = "topic-card rounded-xl p-4";
+
+            const safeId = `${module.id}-${index}`;
+
+            card.innerHTML = `
+                <div class="flex gap-3">
+
+                    <div class="flex-1 min-w-0">
+
+                        <h5 class="text-sm font-semibold text-zinc-200">
+                            ${index + 1}. ${topic[0]}
+                        </h5>
+
+                        <p class="text-xs text-zinc-500 mt-2 leading-relaxed">
+                            ${topic[1]}
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3 mt-4 pt-3 border-t border-[#272735]">
+
+                            <label class="status-label flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="status-${safeId}"
+                                    value="pending"
+                                    ${status === "pending" ? "checked" : ""}
+                                >
+                                Not Started
+                            </label>
+
+                            <label class="status-label flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="status-${safeId}"
+                                    value="learning"
+                                    ${status === "learning" ? "checked" : ""}
+                                >
+                                Learning
+                            </label>
+
+                            <label class="status-label flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="status-${safeId}"
+                                    value="completed"
+                                    ${status === "completed" ? "checked" : ""}
+                                >
+                                Completed
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+            card.querySelectorAll("input[type=radio]").forEach(radio => {
+
+                radio.addEventListener("change", () => {
+                    setStatus(module.id, index, radio.value);
+                });
+
+            });
+
+            topicContainer.appendChild(card);
+
+        });
+
+        inner.appendChild(body);
+        content.appendChild(inner);
+
+        header.addEventListener("click", () => {
+            content.classList.toggle("open");
+
+            const arrow = header.querySelector(".module-arrow");
+            arrow.classList.toggle("rotate");
+        });
+
+        article.appendChild(header);
+        article.appendChild(content);
+
+        container.appendChild(article);
+
+    });
+
+    document.getElementById("moduleCount").textContent =
+        `${visibleCount} Modules`;
+
+    document.getElementById("emptyState").classList.toggle(
+        "hidden",
+        visibleCount !== 0
+    );
+
+}
+
+
+// ==========================================
+// 4. DASHBOARD
+// ==========================================
+
+function updateDashboard() {
+
+    let total = 0;
+    let completed = 0;
+    let learning = 0;
+    let pending = 0;
+
+    modules.forEach(module => {
+
+        module.topics.forEach((_, index) => {
+
+            total++;
+
+            const status = getStatus(module.id, index);
+
+            if (status === "completed") {
+                completed++;
+            } else if (status === "learning") {
+                learning++;
+            } else {
+                pending++;
+            }
+
+        });
+
+    });
+
+    const percent = total
+        ? Math.round((completed / total) * 100)
+        : 0;
+
+    document.getElementById("totalTopics").textContent = total;
+    document.getElementById("completedTopics").textContent = completed;
+    document.getElementById("learningTopics").textContent = learning;
+    document.getElementById("pendingTopics").textContent = pending;
+
+    document.getElementById("overallPercent").textContent =
+        `${percent}%`;
+
+    document.getElementById("overallProgress").style.width =
+        `${percent}%`;
+}
+
+
+// ==========================================
+// 5. SEARCH & FILTER
+// ==========================================
+
+document.getElementById("searchInput")
+    .addEventListener("input", renderModules);
+
+document.getElementById("levelFilter")
+    .addEventListener("change", renderModules);
+
+document.getElementById("statusFilter")
+    .addEventListener("change", renderModules);
+
+
+// ==========================================
+// 6. INITIALIZATION
+// ==========================================
+
+loadProgress();
+renderModules();
+updateDashboard();
+
+</script>
+
+</body>
+</html>
